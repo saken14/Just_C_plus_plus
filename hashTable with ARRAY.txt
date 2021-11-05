@@ -1,0 +1,84 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Person {
+public:
+    int id;
+    string name;
+};
+
+class HashTable {
+private:
+    Person arr[4000];
+    int m = 400;
+
+public:
+    HashTable() {
+        for(int i=0; i<4000; i++) {
+            arr[i].id = 0;
+            arr[i].name = "";
+        }
+    }
+
+    int hashFunction(int id) {
+        return (id % m) * 10;
+    }
+
+    void insert(int id, string name) {
+        int j = hashFunction(id);
+        int i;
+        for(i=0; i<10; i++) {
+            if(arr[j+i].id == 0 && arr[j+i].name == "") {
+                arr[j+i].id = id;
+                arr[j+i].name = name;
+                return;
+            }
+        }
+        if(i > 9) {
+            throw new out_of_range("The bucket is full");
+        }
+    }
+
+    string search(int id) {
+        int j = hashFunction(id);
+        int i;
+        for(i=0; i<10; i++) {
+            if(arr[j+i].id == id) {
+                return arr[j+i].name;
+            }
+        }
+
+        return "Not found";
+    }
+
+    void deleteHashTableInfo(int id) {
+        int j = hashFunction(id);
+        int i;
+        for(i=0; i<10; i++) {
+            if(arr[j+i].id == id) {
+                arr[j+i].id = 0;
+                arr[j+i].name = "";
+                return;
+            }
+        }
+
+        throw new exception("Not found");
+    }
+
+};
+
+int main() {
+    HashTable obj;
+    obj.insert(2777, "Saken");
+    obj.insert(777, "Saken2");
+    obj.insert(123, "Dave");
+    obj.insert(243, "John");
+    obj.insert(652, "Tom");
+    obj.insert(781, "Jerry");
+    obj.deleteHashTableInfo(781);
+
+    cout << obj.search(777);
+
+    return 0;
+}

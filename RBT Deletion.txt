@@ -1,0 +1,293 @@
+#include <iostream>
+using namespace std;
+class Node
+{
+    int data;
+    bool color; // true -black   false - red
+    Node* leftChild, * rightChild, * parent;
+public:
+    bool isBlack() {
+        return color;
+    }
+    void setBlack(bool a) {
+        this->color = a;
+    }
+    bool isRed() {
+        return color;
+    }
+    void setRed(bool a) {
+        this->color = !a;
+    }
+    Node() {
+        int a = -1000000;
+        leftChild = nullptr;
+        rightChild = nullptr;
+        parent = nullptr;
+        this->color = false;
+    }
+    Node(int data)
+    {
+        this->data = data;
+        leftChild = nullptr;
+        rightChild = nullptr;
+        parent = nullptr;
+        this->color = false;
+    }
+    void setData(int data) {
+        this->data = data;
+    }
+    int getData() {
+        return data;
+    }
+    Node* getParent() {
+        return parent;
+    }
+    void setParent(Node* parent) {
+        this->parent = parent;
+    }
+    Node* getLeftChild() {
+        return leftChild;
+    }
+    void setLeftChild(Node* leftChild) {
+        this->leftChild = leftChild;
+    }
+    Node* getRightChild() {
+        return rightChild;
+    }
+    void setRightChild(Node* rightChild) {
+        this->rightChild = rightChild;
+    }
+};
+class RBT {
+    Node* root;
+    Node* nil;
+    void LeftRotate(Node* a) {
+        Node* b = a->getRightChild();
+        a->setRightChild(b->getLeftChild());
+        b->setParent(a->getParent());
+        if (b->getLeftChild() != nil) {
+            b->getLeftChild()->setParent(a);
+        }
+        if (a->getParent() == nil) {
+            root = b;
+        }
+        else if (a == a->getParent()->getLeftChild()) {
+            a->getParent()->setLeftChild(b);
+        }
+        else {
+            a->getParent()->setRightChild(b);
+        }
+        b->setLeftChild(a);
+        a->setParent(b);
+    }
+    void rightRotate(Node* a) {
+        Node* b = a->getLeftChild();
+        a->setLeftChild(b->getRightChild());
+        b->setParent(a->getParent());
+        if (b->getRightChild() != nil) {
+            b->getRightChild()->setParent(a);
+        }
+        if (a->getParent() == nil) {
+            this->root = b;
+        }
+        else if (a->getParent()->getLeftChild() == a) {
+            a->getParent()->setLeftChild(b);
+        }
+        else {
+            a->getParent()->setRightChild(b);
+        }
+        b->setRightChild(a);
+        a->setParent(b);
+    }
+    void insertFixUp(Node* a) {
+        while (!a->getParent()->isBlack()) {
+            if (a->getParent()==a->getParent()->getParent()->getRightChild()) {
+                if (!(a->getParent()->getParent()->getLeftChild()->isBlack())) {
+                    cout << "!";
+                    a->getParent()->getParent()->setBlack(false); //5 will be red
+                    a->getParent()->setBlack(true);                 // 7 will be black
+                    a->getParent()->getParent()->getLeftChild()->setBlack(true);    //3 will be black
+                    a = a->getParent()->getParent();
+                }
+                else {
+                    cout << "!";
+                    if (a->getParent()->getLeftChild()==a) {
+                        a = a->getParent();
+                        cout << "!";
+                        rightRotate(a);
+                    }
+                    a->getParent()->setRed(true);
+                    a->getParent()->getParent()->setRed(false);
+                    a->setBlack(true);
+                    LeftRotate(a->getParent()->getParent());
+                    a = a->getParent();
+                }
+            }
+            else {
+                if (!(a->getParent()->getParent()->getRightChild()->isBlack())) {
+                    a->getParent()->getParent()->setBlack(false);
+                    a->getParent()->setBlack(true);
+                    a->getParent()->getParent()->getRightChild()->setBlack(true);
+                    a = a->getParent()->getParent();
+                }
+                else {
+                    cout << "!";
+                    if (a->getParent()->getRightChild() == a) {
+                        a = a->getParent();
+                        cout << "!";
+                        LeftRotate(a);
+                    }
+                    a->getParent()->setBlack(true);
+                    a->getParent()->getParent()->setBlack(false);
+                    a->setBlack(true);
+                    rightRotate(a->getParent()->getParent());
+                    a = a->getParent();
+                }
+            }
+        }
+        root->setBlack(true);
+    }
+public:
+    RBT() {
+        nil = new Node();
+        nil->setBlack(true);
+        root = nil;
+    }
+    RBT(Node* root) {
+        this->root = root;
+        this->nil = nil;
+        nil->setBlack(true);
+        root->setLeftChild(nil);
+        root->setRightChild(nil);
+    }
+    void inOrderTreeWalk(Node* root) {
+        if (root != nil) {
+            inOrderTreeWalk(root->getLeftChild());
+            cout << root->getData() << " " << root->isBlack() << " " << root->getParent()->getData() <<" "<<root->getRightChild()->isBlack()<<" "<< root->getLeftChild()->isBlack()<<endl;
+            inOrderTreeWalk(root->getRightChild());
+        }
+    }
+    void inOrderTreeWalk() {
+        inOrderTreeWalk(root);
+    };
+    void insert(Node* node) {
+        Node* x = this->root;
+        Node* y = nil;
+        while (x != nil) {
+            y = x;
+            if (node->getData() < x->getData()) {
+                x = x->getLeftChild();
+            }
+            else {
+                x = x->getRightChild();
+            }
+        }
+        node->setParent(y);
+        if (y == nil) {
+            this->root = node;
+        }
+        else if (node->getData() < y->getData()) {
+            y->setLeftChild(node);
+        }
+        else {
+            y->setRightChild(node);
+        }
+        node->setRightChild(nil);
+        node->setLeftChild(nil);
+        insertFixUp(node);
+    }
+
+    Node *findMin(Node *x) {
+        while (x->getLeftChild() != nil) {
+            x = x->getLeftChild();
+        }
+        return x;
+    }
+
+    void deleteNode(Node* n) {
+        Node* x = this->root;
+
+        while(n->getData() != x->getData()) {   //we search the node that we want to delete. it is "x" variable
+            if(n->getData() < x->getData())
+                x = x->getLeftChild();
+            else
+                x = x->getRightChild();
+        }
+
+
+        if(x->getRightChild() == nil && x->getLeftChild() == nil) {    //case #1: No child
+            delete x;
+        }
+        else if(x->getLeftChild() == nil) {                               //case #2: Only one child
+            if(x->isBlack() && x->getRightChild()->isRed()) {
+                x->getRightChild()->setBlack(true);
+            }
+
+            if(x->getData() < x->getParent()->getData()) {
+                x->getParent()->setLeftChild(x->getRightChild());
+                delete x;
+            }
+            else {
+                x->getParent()->setRightChild(x->getRightChild());
+                delete x;
+            }
+        }
+        else if(x->getRightChild() == nil) {
+            if(x->isBlack() && x->getLeftChild()->isRed()) {
+                x->getLeftChild()->setBlack(true);
+            }
+
+            if(x->getData() < x->getParent()->getData()) {
+                x->getParent()->setLeftChild(x->getLeftChild());
+                delete x;
+            }
+            else {
+                x->getParent()->setRightChild(x->getLeftChild());
+                delete x;
+            }
+        }
+        else {                                                          //case #3:  has 2 non-nil child
+            Node *temp = findMin(x->getRightChild());
+
+            if(x->isRed() && temp->isRed()) {
+                x->setData(temp->getData());
+
+                delete temp;
+            }
+            else if(x->isBlack() && temp->isRed()) {
+                temp->setBlack(true);
+                x->setData(temp->getData());
+
+                delete temp;
+            }
+            else if(x->isRed() && temp->isBlack()) {
+                temp->setRed(true);
+                x->setData(temp->getData());
+
+                if(x->getRightChild()->isRed())
+                    insertFixUp(x->getRightChild());
+
+                delete temp;
+            }
+            if(x->isRed() && temp->isBlack()) {
+                temp->setRed(true);
+                x->setData(temp->getData());
+                x->getLeftChild()->setRed(true);
+                x->setBlack(true);
+
+                delete temp;
+            }
+        }
+
+    }
+};
+int main() {
+    RBT obj;
+    obj.insert(new Node(5));
+    obj.insert(new Node(3));
+    obj.insert(new Node(7));
+    obj.insert(new Node(12));
+    obj.insert(new Node(11));
+    obj.inOrderTreeWalk();
+    return 0;
+}

@@ -1,0 +1,251 @@
+.............................................................. #1
+
+
+#include<iostream>
+using namespace std;
+
+template<typename T>
+class Vector {
+    int size;
+    T *vec;
+public:
+    Vector() {
+        size = 0;
+    }
+
+    Vector(int size) {
+        this->size = size;
+        vec = new T[size];
+        for (int i = 0; i < size; i++)
+            vec[i] = T();
+    }
+
+    Vector(int size, T def) {
+        this->size = size;
+        vec = new T[size];
+        for (int i = 0; i < size; i++)
+            vec[i] = def;
+    }
+
+    void push_back(T element) {
+        T *temp = new T[size];
+        for (int i = 0; i < size; i++)
+            temp[i] = vec[i];
+        delete[] vec;
+        vec = new T[++size];
+
+        for (int i = 0; i < size - 1; i++)
+            vec[i] = temp[i];
+        vec[size - 1] = element;
+        delete[] temp;
+    }
+
+    void push_front(T element) {
+        T *temp = new T[size];
+        for (int i = 0; i < size; i++)
+            temp[i] = vec[i];
+        delete[] vec;
+        vec = new T[++size];
+        vec[0] = element;
+        for (int i = 1; i < size; i++) {
+            vec[i] = temp[i - 1];
+        }
+        delete[] temp;
+    }
+
+    void pop_back() {
+        if (size <= 1) {
+            delete[] vec;
+            vec = new T[size];
+        }
+        else {
+            T *temp = new T[--size];
+            for (int i = 0; i < size; i++)
+                temp[i] = vec[i];
+            delete[] vec;
+            vec = new T[size];
+            for (int i = 0; i < size; i++)
+                vec[i] = temp[i];
+            delete[] temp;
+        }
+    }
+
+    void pop_front() {
+        if (size <= 1) {
+            delete[] vec;
+            vec = new T[size];
+        }
+        else {
+            T *temp = new T[--size];
+            for (int i = size - 1; i >= 0; i--)
+                temp[i] = vec[i + 1];
+            delete[] vec;
+            vec = new T[size];
+            for (int i = 0; i < size; i++)
+                vec[i] = temp[i];
+            delete[] temp;
+        }
+    }
+
+    int length() {
+        return size;
+    }
+
+    T operator[](int i) {
+        return vec[i];
+    }
+
+    ~Vector() {
+        delete[] vec;
+    }
+
+    void add(T element, int index) {
+        int c = 0;
+        T *temp = new T[++size];
+        for (int i = 0; i < size; i++) {
+            if (index + 1 == i) {
+                temp[i] = element;
+            }
+            else {
+                temp[i] = vec[c];
+                c++;
+            }
+        }
+        delete[] vec;
+        vec = new T[size];
+        for (int i = 0; i < size; i++) {
+            vec[i] = temp[i];
+        }
+        delete[] temp;
+    }
+
+    void remove(int index) {
+        if (size <= 1) {
+            delete[] vec;
+            vec = new T[size];
+        }
+        else {
+            int c = 0;
+            T *temp = new T[--size];
+            for (int i = 0; i < size + 1; i++) {
+                if (index == i) {
+                    continue;
+                }
+                else {
+                    temp[c] = vec[i];
+                    c++;
+                }
+            }
+            delete[] vec;
+            vec = new T[size];
+            for (int i = 0; i < size; i++)
+                vec[i] = temp[i];
+            delete[] temp;
+        }
+    }
+
+    void set(T element, int index) {
+        for (int i = 0; i < size; i++)
+            if (index == i) {
+                vec[i] = element;
+                break;
+            }
+    }
+
+    void clearAll() {
+        for (int i = 0; i < size; i++)
+            pop_front();
+    }
+
+    void sort() {
+        T temp;
+        for (int i = 0; i < size - 1; i++) {
+            for (int j = 0; j < size - 1; j++) {
+                if (vec[j] > vec[j + 1]) {
+                    temp = vec[j];
+                    vec[j] = vec[j + 1];
+                    vec[j + 1] = temp;
+                }
+            }
+        }
+
+    }
+};
+
+class Integer {
+private:
+    int m_value;
+public:
+    Integer(int i = 0) {
+        m_value = i;
+    }
+
+    int value() {
+        return m_value;
+    }
+    friend istream& operator>>(istream &, Integer&);
+};
+
+ostream& operator<<(ostream &out, Integer i) {
+    out << i.value();
+    return out;
+}
+istream& operator>>(istream &in, Integer& i) {
+    in >> i.m_value;
+    return in;
+}
+// for(i=0; i<size;i++){if (a[i] = b[i]){return True}else {False} }
+//{1,2,3,4} => add(a , 2) =>  {1,2,3,a,4}
+// remove(2) => {1,2,4}
+//for(i ){a[i] = b[i]}
+/*
+ //TODO List:
+ 1. methods: push_front(T element), pop_front(), add(T element, int index),
+    remove(int index), set(T element, int index), clearAll(), sort()
+ 2. operators: ==, !=, =, >>, <<
+ */
+int main() {
+    Vector<int> a(3, 0);
+    cout << "length" << a.length() << endl;
+    a.push_front(-1);
+    a.push_back(100);
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after pop back" << endl;
+    a.pop_back();
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after pop front" << endl;
+    a.pop_front();
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after add" << endl;
+    a.add(20, 1);
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after remove" << endl;
+    a.remove(2);
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after set" << endl;
+    a.set(77, 1);
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    cout << endl << "after clearAll" << endl;
+    a.clearAll();
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+    a.push_back(3);
+    a.push_back(34);
+    a.push_back(765);
+    a.push_back(23);
+    a.push_back(1);
+    cout << endl << "after sort" << endl;
+    a.sort();
+    for (int i = 0; i < a.length(); i++)
+        cout << a[i] << " ";
+
+
+
+    return 0;
+}

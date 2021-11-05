@@ -1,0 +1,153 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node *parent, *left, *right;
+
+    Node(int data) {
+        this->data=data;
+        this->parent= nullptr;
+        this->left= nullptr;
+        this->right= nullptr;
+    }
+};
+
+class BinaryTree {
+public:
+    Node *root;
+
+    BinaryTree() {
+        this->root= nullptr;
+    }
+
+    BinaryTree(Node *root) {
+        this->root = root;
+    }
+
+    void inOrderTreeWalk(Node *root) {
+        if(root != nullptr) {
+            inOrderTreeWalk(root->left);
+            cout<<root->data<<", ";
+            inOrderTreeWalk(root->right);
+        }
+    }
+
+    void insert(int data) {
+        Node *temp = new Node(data);
+
+        Node *y = nullptr;
+        Node *x = this->root;
+
+        while (x != nullptr) {
+            y = x;
+            if(temp->data < x->data)
+                x = x->left;
+            else
+                x = x->right;
+        }
+        temp->parent = y;
+
+        if(y == nullptr)
+            this->root = temp;
+        else if(temp->data < y->data)
+            y->left = temp;
+        else
+            y->right = temp;
+    }
+
+    int search(int n) {
+        Node *x = this->root;
+
+        while (x != nullptr && n != x->data) {
+            if(n < x->data)
+                x = x->left;
+            else
+                x = x->right;
+        }
+
+        return x->data;
+    }
+
+    Node *findMin(Node *x) {
+        while (x->left != nullptr) {
+            x = x->left;
+        }
+        return x;
+    }
+
+    void deleteNode(int n) {
+        Node *x = this->root;
+
+        while(n != x->data) {
+            if(n < x->data)
+                x = x->left;
+            else
+                x = x->right;
+        }
+
+        //case #1: No child
+        if(x->right == nullptr && x->left == nullptr) {
+            delete x;
+        } //case #1: Only one child
+        else if(x->left == nullptr) {
+            if(x->data < x->parent->data) {
+                x->parent->left = x->right;
+                delete x;
+            }
+            else {
+                x->parent->right = x->right;
+                delete x;
+            }
+        }
+        else if(x->right == nullptr) {
+            if(x->data < x->parent->data) {
+                x->parent->left = x->left;
+                delete x;
+            }
+            else {
+                x->parent->right = x->left;
+                delete x;
+            }
+        }//case #1:  2 child
+        else {
+            Node *temp = findMin(x->right);
+            x->data = temp->data;
+
+            delete temp;
+        }
+    }
+
+};
+
+int main() {
+    BinaryTree obj;
+    obj.insert(4);
+    obj.insert(2);
+    obj.insert(3);
+    obj.insert(234);
+    obj.insert(6);
+    obj.insert(62);
+    obj.insert(6);
+    obj.insert(8);
+    obj.insert(436);
+    obj.insert(764);
+    obj.insert(5);
+    obj.insert(85);
+    obj.insert(2346);
+    obj.insert(745);
+    obj.insert(2);
+    obj.insert(447);
+
+    obj.inOrderTreeWalk(obj.root);
+
+    obj.deleteNode(764);
+
+    cout<<"\nAfter deleting: \n";
+
+    obj.inOrderTreeWalk(obj.root);
+    //cout<<obj.search(234);
+
+    return 0;
+}

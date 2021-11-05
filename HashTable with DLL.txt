@@ -1,0 +1,294 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+template <typename T>
+
+class DoublyLinkedList {
+    class Node {
+    public:
+        int id;
+        string name;
+        Node *next;
+        Node *prev;
+
+        Node(int id, string name, Node *next = nullptr, Node *prev = nullptr) {
+            this->id = id;
+            this->name = name;
+            this->next = next;
+            this->prev = prev;
+        }
+    };
+
+    int size;
+    int m;
+    Node *head;
+    Node *tail;
+
+public:
+    DoublyLinkedList() {
+        size = 0;
+        m = 10;
+        head = nullptr;
+        tail = nullptr;
+    }
+
+    int length(DoublyLinkedList<int> dl) {
+        int size = 0;
+        Node *cur = dl.head;
+        while (cur != nullptr) {
+            size++;
+            cur = cur->next;
+        }
+        return size;
+    }
+
+    T operator[] (int index) {
+        T res = T();
+        if (index <= size / 2) {
+            int c = 0;
+            Node *cur = head;
+            while (cur != nullptr) {
+                if (c == index) {
+                    res = cur->id;
+                    break;
+                }
+                cur = cur->next;
+                c++;
+            }
+        }
+        else {
+            int c = size - 1;
+            Node *cur = tail;
+            while (cur != nullptr) {
+                if (c == index) {
+                    res = cur->id;
+                    break;
+                }
+                cur = cur->prev;
+                c--;
+            }
+        }
+        return res;
+    }
+
+    void pushBack(int id, string name) {
+
+        if (head == nullptr)
+            head = new Node(id, name);
+        else if (tail == nullptr) {
+            tail = new Node(id, name, nullptr, head);
+            head->next = tail;
+        }
+        else {
+            Node *temp = new Node(id, name, nullptr, tail);
+            tail->next = temp;
+            tail = temp;
+        }
+        size++;
+    }
+
+    void popBack() {
+        if (size <= 0)
+            throw out_of_range("");
+        else if (size == 1) {
+            head = nullptr;
+            size--;
+        }
+        else if (size == 2) {
+            tail = nullptr;
+            size--;
+        }
+        else {
+            Node *cur = tail->prev;
+            delete tail;
+            tail = cur;
+            tail->next = nullptr;
+            size--;
+        }
+    }
+
+    void clearAll() {
+        while (size != 0)
+            popBack();
+    }
+
+    string searchById(int id) {
+        Node *cur = head;
+        while(cur != nullptr) {
+            if(cur->id == id){
+                return cur->name;
+            }
+            cur = cur->next;
+        }
+        throw new exception("Not Found!");
+    }
+
+    void deleteHashTable(int id) {
+        Node *cur = head;
+        while(cur != nullptr) {
+            if(cur->id == id){
+                cur->id = 0;
+                cur->name = "";
+                return;
+            }
+            cur = cur->next;
+        }
+        throw new exception("Not Found!");
+    }
+
+    void displayStudent(DoublyLinkedList<int> dl, int &c) {
+        Node *cur = dl.head;
+        while (cur != nullptr) {
+            cout<<c<<"\t"<<cur->id<<"\t\t"<<cur->name<<endl;
+            cur = cur->next;
+            c++;
+        }
+    }
+
+    ~DoublyLinkedList() {
+        clearAll();
+    }
+};
+
+class HashTable: public DoublyLinkedList<int> {
+    DoublyLinkedList<int> dl1, dl2, dl3, dl4, dl5, dl6, dl7, dl8, dl9, dl10;
+
+public:
+
+    int hashFunction(int id) {
+        return id % 10;
+    }
+
+    void insert(int id, string name) {
+        int mr = hashFunction(id);
+
+        switch (mr) {
+            case 0:
+                dl1.pushBack(id, name);
+                break;
+            case 1:
+                dl2.pushBack(id, name);
+                break;
+            case 2:
+                dl3.pushBack(id, name);
+                break;
+            case 3:
+                dl4.pushBack(id, name);
+                break;
+            case 4:
+                dl5.pushBack(id, name);
+                break;
+            case 5:
+                dl6.pushBack(id, name);
+                break;
+            case 6:
+                dl7.pushBack(id, name);
+                break;
+            case 7:
+                dl8.pushBack(id, name);
+                break;
+            case 8:
+                dl9.pushBack(id, name);
+                break;
+            case 9:
+                dl10.pushBack(id, name);
+                break;
+        }
+    }
+
+    string searchById(int id) {
+        int mr = hashFunction(id);
+
+        switch (mr) {
+            case 0:
+                return dl1.searchById(id);
+            case 1:
+                return dl2.searchById(id);
+            case 2:
+                return dl3.searchById(id);
+            case 3:
+                return dl4.searchById(id);
+            case 4:
+                return dl5.searchById(id);
+            case 5:
+                return dl6.searchById(id);
+            case 6:
+                return dl7.searchById(id);
+            case 7:
+                return dl8.searchById(id);
+            case 8:
+                return dl9.searchById(id);
+            case 9:
+                return dl10.searchById(id);
+        }
+    }
+
+    void deleteHashTableInfo(int id) {
+        int mr = hashFunction(id);
+
+        switch (mr) {
+            case 0:
+                dl1.deleteHashTable(id);
+                break;
+            case 1:
+                dl2.deleteHashTable(id);
+                break;
+            case 2:
+                dl3.deleteHashTable(id);
+                break;
+            case 3:
+                dl4.deleteHashTable(id);
+                break;
+            case 4:
+                dl5.deleteHashTable(id);
+                break;
+            case 5:
+                dl6.deleteHashTable(id);
+                break;
+            case 6:
+                dl7.deleteHashTable(id);
+                break;
+            case 7:
+                dl8.deleteHashTable(id);
+                break;
+            case 8:
+                dl9.deleteHashTable(id);
+                break;
+            case 9:
+                dl10.deleteHashTable(id);
+                break;
+        }
+    }
+
+    void displayALLStudents() {
+        cout<<"#\t"<<"ID: \t\t"<<"NAME:\n\n";
+        int c=1;
+        displayStudent(dl1, c);
+        displayStudent(dl2, c);
+        displayStudent(dl3, c);
+        displayStudent(dl4, c);
+        displayStudent(dl5, c);
+        displayStudent(dl6, c);
+        displayStudent(dl7, c);
+        displayStudent(dl8, c);
+        displayStudent(dl9, c);
+        displayStudent(dl10, c);
+    }
+
+};
+
+int main() {
+    HashTable h;
+    h.insert(2777, "Saken");
+    h.insert(777, "Saken2");
+    h.insert(123, "Dave");
+    h.insert(243, "John");
+    h.insert(652, "Tom");
+    h.insert(781, "Jerry");
+
+    //h.deleteHashTableInfo(123);
+
+    h.displayALLStudents();
+    return 0;
+}
